@@ -1,0 +1,16 @@
+{
+  "name": "daily-vanish-worker",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@libsql/client": "^0.18.0",
+    "@news/db": "*",
+    "fast-xml-parser": "^5.11.1",
+    "hono": "^4.13.8"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260702.1",
+    "typescript": "^5.9.3",
+    "wrangler": "^3.114.17"
+  }
+}

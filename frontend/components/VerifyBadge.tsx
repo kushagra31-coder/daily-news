@@ -1,0 +1,165 @@
+'use client'
+
+import { useState } from 'react'
+
+interface VerifyBadgeProps {
+  verified: boolean
+  score: number
+  tier: string
+  sourceCount: number
+  sourceName?: string
+  sourceTrustScore?: number
+  userReports?: number
+  moderationStatus?: string
+  className?: string
+}
+
+interface TierConfig {
+  icon: string
+  label: string
+  colorClass: string
+  bgClass: string
+  ringClass: string
+}
+
+function getTierConfig(
+  verified: boolean,
+  score: number,
+  tier: string,
+  userReports: number,
+  moderationStatus: string
+): TierConfig {
+  if (moderationStatus === 'removed' || userReports >= 3 || (score <= 0.5 && userReports > 0)) {
+    return {
+      icon: '⚠️',
+      label: 'Disputed',
+      colorClass: 'text-red-700 dark:text-red-400',
+      bgClass:    'bg-red-50 dark:bg-red-950/60',
+      ringClass:  'ring-red-200 dark:ring-red-800',
+    }
+  }
+
+  if (verified) {
+    switch (tier) {
+      case 'source_rep':
+        return {
+          icon: '🔵',
+          label: 'Trusted Source',
+          colorClass: 'text-blue-700 dark:text-blue-300',
+          bgClass:    'bg-blue-50 dark:bg-blue-950/60',
+          ringClass:  'ring-blue-200 dark:ring-blue-800',
+        }
+      case 'corroboration':
+        return {
+          icon: '🔵',
+          label: 'Corroborated',
+          colorClass: 'text-blue-600 dark:text-blue-400',
+          bgClass:    'bg-blue-50 dark:bg-blue-950/60',
+          ringClass:  'ring-blue-200 dark:ring-blue-800',
+        }
+      case 'llm':
+        return {
+          icon: '🔵',
+          label: 'AI-checked',
+          colorClass: 'text-sky-600 dark:text-sky-400',
+          bgClass:    'bg-sky-50 dark:bg-sky-950/60',
+          ringClass:  'ring-sky-200 dark:ring-sky-800',
+        }
+      default:
+        return {
+          icon: '🔵',
+          label: 'Trusted',
+          colorClass: 'text-blue-700 dark:text-blue-300',
+          bgClass:    'bg-blue-50 dark:bg-blue-950/60',
+          ringClass:  'ring-blue-200 dark:ring-blue-800',
+        }
+    }
+  }
+
+  return {
+    icon: '🟡',
+    label: 'Unverified',
+    colorClass: 'text-amber-700 dark:text-amber-400',
+    bgClass:    'bg-amber-50 dark:bg-amber-950/60',
+    ringClass:  'ring-amber-200 dark:ring-amber-800',
+  }
+}
+
+export default function VerifyBadge({
+  verified,
+  score,
+  tier,
+  sourceCount,
+  sourceName,
+  sourceTrustScore,
+  userReports = 0,
+  moderationStatus = 'approved',
+  className = '',
+}: VerifyBadgeProps) {
+  const [showTooltip, setShowTooltip] = useState(false)
+  const cfg = getTierConfig(verified, score, tier, userReports, moderationStatus)
+
+  let badgeText = cfg.label
+  if (verified && tier === 'corroboration' && sourceCount > 1) {
+    badgeText = `Corroborated (${sourceCount})`
+  }
+
+  function buildTooltip(): string {
+    const isDisputed = cfg.label === 'Disputed'
+    if (isDisputed) {
+      if (userReports > 0) return `Flagged by ${userReports} users as potentially misleading`
+      return 'Low credibility score - may be inaccurate or disputed'
+    }
+    
+    let confidence = 'Low'
+    if (score >= 0.9) confidence = 'High'
+    else if (score >= 0.7) confidence = 'Moderate'
+    
+    if (verified && tier === 'source_rep') {
+      return `${sourceName || 'Source'} is a reputable outlet. System confidence: ${confidence}`
+    }
+    if (verified && tier === 'corroboration') {
+      return `Confirmed by ${sourceCount} independent sources. System confidence: ${confidence}`
+    }
+    if (verified && tier === 'llm') {
+      return `Passed AI fact-checking. System confidence: ${confidence}`
+    }
+    return `Not yet verified. System confidence: ${confidence} - treat with caution`
+  }
+
+  return (
+    <div className={`relative inline-flex ${className}`}>
+      <button
+        type="button"
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
+        onFocus={() => setShowTooltip(true)}
+        onBlur={() => setShowTooltip(false)}
+        aria-label={`Verification status: ${badgeText}. ${buildTooltip()}`}
+        className={`
+          inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold
+          ring-1 transition-all cursor-default select-none
+          ${cfg.bgClass} ${cfg.colorClass} ${cfg.ringClass}
+        `}
+      >
+        <span aria-hidden="true">{cfg.icon}</span>
+        <span>{badgeText}</span>
+      </button>
+
+      {showTooltip && (
+        <div
+          role="tooltip"
+          className="
+            absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50
+            w-56 rounded-lg px-3 py-2 text-xs leading-relaxed shadow-xl
+            bg-gray-900 text-gray-100 dark:bg-gray-100 dark:text-gray-900
+            pointer-events-none whitespace-normal text-center
+          "
+        >
+          {buildTooltip()}
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-100" />
+        </div>
+      )}
+    </div>
+  )
+}

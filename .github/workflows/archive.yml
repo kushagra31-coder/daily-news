@@ -1,0 +1,33 @@
+﻿name: Archive Daily News
+
+on:
+  schedule:
+    - cron: '55 23 * * *'  # Every day at 11:55 PM UTC
+  workflow_dispatch:           # Manual trigger
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run archive and cleanup
+        run: |
+          python -c "import asyncio; from backend.scheduler import archive_and_cleanup; asyncio.run(archive_and_cleanup())"
+        env:
+          MONGODB_URL: ${{ secrets.MONGODB_URL }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}

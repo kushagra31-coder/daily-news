@@ -1,0 +1,20 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1789667102600,
+      "tag": "0000_goofy_fantastic_four",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1789730995245,
+      "tag": "0001_burly_champions",
+      "breakpoints": true
+    }
+  ]
+}

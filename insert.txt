@@ -1,0 +1,11 @@
+﻿  async getLiveArticlesCount(category?: string): Promise<number> {
+    const now = new Date();
+    let conditions = [gt(articles.expires_at, now)];
+    if (category) {
+      conditions.push(eq(articles.category, category));
+    }
+    const res = await this.db.select({ count: sql<number>\count(*)\ })
+      .from(articles)
+      .where(and(...conditions));
+    return res[0]?.count || 0;
+  }
