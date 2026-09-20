@@ -1,4 +1,4 @@
-﻿name: Fetch Daily News
+name: Fetch Daily News
 
 on:
   schedule:
@@ -24,10 +24,12 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements.txt
+        working-directory: backend
 
       - name: Run ingestion pipeline
         run: |
-          python -c "import asyncio; from backend.scheduler import run_ingestion_pipeline; asyncio.run(run_ingestion_pipeline())"
+          python -c "import asyncio; from scheduler import run_ingestion_pipeline; asyncio.run(run_ingestion_pipeline())"
+        working-directory: backend
         env:
           MONGODB_URL: ${{ secrets.MONGODB_URL }}
           REDIS_URL: ${{ secrets.REDIS_URL }}

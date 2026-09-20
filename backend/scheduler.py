@@ -1,4 +1,4 @@
-﻿"""scheduler.py -- Ingestion pipeline orchestrator for Daily Vanishing News."""
+"""scheduler.py -- Ingestion pipeline orchestrator for Daily Vanishing News."""
 from __future__ import annotations
 import logging, re
 from datetime import datetime, timedelta, timezone
@@ -192,7 +192,7 @@ async def archive_and_cleanup() -> list[dict]:
         try:
             await archive_col.update_one(
                 {'url_hash': archive_doc['url_hash']},
-                {'': archive_doc},
+                {'$set': archive_doc},
                 upsert=True,
             )
             archive_count += 1
@@ -203,7 +203,7 @@ async def archive_and_cleanup() -> list[dict]:
     expiry_warning_articles: list[dict] = []
     warning_cursor = articles_col.find(
         {
-            'published_at': {'': one_hour_ago},
+            'published_at': {'$gte': one_hour_ago},
             'expiry_warning_sent': False,
             'visible': True,
             'moderation_status': 'approved',
@@ -220,8 +220,8 @@ async def archive_and_cleanup() -> list[dict]:
         article_ids_to_update.append(doc['_id'])
     if article_ids_to_update:
         await articles_col.update_many(
-            {'_id': {'': article_ids_to_update}},
-            {'': {'expiry_warning_sent': True}},
+            {'_id': {'$in': article_ids_to_update}},
+            {'$set': {'expiry_warning_sent': True}},
         )
         logger.info('Marked %d articles as expiry_warning_sent.', len(article_ids_to_update))
     return expiry_warning_articles
