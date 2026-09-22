@@ -82,7 +82,7 @@ const NewsCard = forwardRef<HTMLElement, NewsCardProps>(({ article, index = 0, s
             aria-hidden="true"
           >
             <span className="text-4xl opacity-70 select-none">
-              dY'
+              📰
             </span>
           </div>
         )}
