@@ -37,7 +37,7 @@ function FeedLoadingFallback() {
 // â”€â”€â”€ Page (Server Component) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export default async function HomePage() {
-  // SSR pre-fetch â€” runs on the server, used as SWR fallback
+  // SSR pre-fetch — runs on the server, used as SWR fallback
   const [initialFeed, initialStats] = await Promise.allSettled([
     prefetchFeed(),
     prefetchStats(),
