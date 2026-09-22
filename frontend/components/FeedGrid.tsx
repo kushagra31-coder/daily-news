@@ -42,12 +42,13 @@ const EmptyState = forwardRef<HTMLDivElement>((props, ref) => {
       transition={{ duration: 0.5 }}
       className="col-span-full flex flex-col items-center justify-center py-24 text-center gap-4"
     >
-      <span className="text-6xl" aria-hidden="true">dY'</span>
+      <span className="text-6xl" aria-hidden="true">📰</span>
       <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300">
         No news in this category yet
       </h3>
       <p className="text-sm text-gray-500 dark:text-gray-500 max-w-sm">
-        Check back later! Our engine automatically detects and clusters breaking events.
+        Stories appear here as our engine detects and clusters breaking events.
+        New headlines land every hour — check back soon.
       </p>
     </motion.div>
   )
