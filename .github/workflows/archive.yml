@@ -28,7 +28,7 @@ jobs:
       - name: Run archive and cleanup
         run: |
          python -c "import asyncio; from scheduler import archive_and_cleanup; asyncio.run(archive_and_cleanup())"
-         working-directory: backend
-            env:
-             MONGODB_URL: ${{ secrets.MONGODB_URL }}
-             REDIS_URL: ${{ secrets.REDIS_URL }}
+        working-directory: backend
+        env:
+          MONGODB_URL: ${{ secrets.MONGODB_URL }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}
